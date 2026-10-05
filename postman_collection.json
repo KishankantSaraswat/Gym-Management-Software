@@ -1,0 +1,1750 @@
+{
+  "info": {
+    "name": "GymHood Backend API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "POST /auth/register",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /auth/verify-otp",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/verify-otp",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "verify-otp"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /auth/login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /auth/logout",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/logout",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /auth/profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/profile",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "profile"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /auth/profile",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/profile",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "profile"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /auth/password/forgot",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/password/forgot",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "password",
+                "forgot"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /auth/password/verify-reset-otp",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/password/verify-reset-otp",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "password",
+                "verify-reset-otp"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /auth/password/reset",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/password/reset",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "password",
+                "reset"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /auth/google-login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/google-login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "google-login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /auth/update-fcm-token",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/update-fcm-token",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "update-fcm-token"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Gymdb",
+      "item": [
+        {
+          "name": "POST /gymdb/gym/register",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/gym/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "gym",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /gymdb/me",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /gymdb/gyms",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/gyms",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "gyms"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /gymdb/gym/pending-requests",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/gym/pending-requests",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "gym",
+                "pending-requests"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /gymdb/gym/owner/:ownerId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/gym/owner/:ownerId",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "gym",
+                "owner",
+                ":ownerId"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /gymdb/gym/:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/gym/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "gym",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /gymdb/gym/:id",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/gym/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "gym",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /gymdb/gym/:gymId/media",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/gym/:gymId/media",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "gym",
+                ":gymId",
+                "media"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /gymdb/gyms/status",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/gyms/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "gyms",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /gymdb/gyms/verification",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/gyms/verification",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "gyms",
+                "verification"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /gymdb/gyms/announcements",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/gyms/announcements",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "gyms",
+                "announcements"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /gymdb/announcements/gym",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/announcements/gym",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "announcements",
+                "gym"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /gymdb/announcements/gym/:announcementId",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/announcements/gym/:announcementId",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "announcements",
+                "gym",
+                ":announcementId"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /gymdb/:gymId/plans",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/:gymId/plans",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                ":gymId",
+                "plans"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /gymdb/plans/gym/:gymId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/plans/gym/:gymId",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "plans",
+                "gym",
+                ":gymId"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /gymdb/plans/:planId",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/plans/:planId",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "plans",
+                ":planId"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /gymdb/name/:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/name/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "name",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /gymdb/plans/purchase",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/plans/purchase",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "plans",
+                "purchase"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /gymdb/plans/verifyPlanPayment",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/plans/verifyPlanPayment",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "plans",
+                "verifyPlanPayment"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /gymdb/plans/approve-cash",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/plans/approve-cash",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "plans",
+                "approve-cash"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /gymdb/plans/reject-cash",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/plans/reject-cash",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "plans",
+                "reject-cash"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /gymdb/plans/user",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/plans/user",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "plans",
+                "user"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /gymdb/userPlans/gym",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/userPlans/gym",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "userPlans",
+                "gym"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /gymdb/api/transactions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/api/transactions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "api",
+                "transactions"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /gymdb/plans/usage/:planId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/plans/usage/:planId",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "plans",
+                "usage",
+                ":planId"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /gymdb/ratings",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/ratings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "ratings"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /gymdb/ratings/gym/:gymId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/ratings/gym/:gymId",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "ratings",
+                "gym",
+                ":gymId"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /gymdb/ratings/:id",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/ratings/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "ratings",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /gymdb/ratings/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/ratings/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "ratings",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /gymdb/gym/check-in",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/gym/check-in",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "gym",
+                "check-in"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /gymdb/gym/check-out",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/gym/check-out",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "gym",
+                "check-out"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /gymdb/userStreak",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/userStreak",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "userStreak"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /gymdb/user/yearly-data",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/user/yearly-data",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "user",
+                "yearly-data"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /gymdb/gym/:gymId/today-register",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/gym/:gymId/today-register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "gym",
+                ":gymId",
+                "today-register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /gymdb/gym/:gymId/active-users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/gym/:gymId/active-users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "gym",
+                ":gymId",
+                "active-users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /gymdb/gym/:gymId/clean-expired-users",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/gym/:gymId/clean-expired-users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "gym",
+                ":gymId",
+                "clean-expired-users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /gymdb/gym/:gymId/active-capacity",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/gym/:gymId/active-capacity",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "gym",
+                ":gymId",
+                "active-capacity"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /gymdb/dashboard/stats/:gymId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/dashboard/stats/:gymId",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "dashboard",
+                "stats",
+                ":gymId"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /gymdb/dashboard/revenue/:gymId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/dashboard/revenue/:gymId",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "dashboard",
+                "revenue",
+                ":gymId"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /gymdb/dashboard/members/:gymId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/dashboard/members/:gymId",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "dashboard",
+                "members",
+                ":gymId"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /gymdb/dashboard/members/list/:gymId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/dashboard/members/list/:gymId",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "dashboard",
+                "members",
+                "list",
+                ":gymId"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /gymdb/dashboard/member/details/:planId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gymdb/dashboard/member/details/:planId",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gymdb",
+                "dashboard",
+                "member",
+                "details",
+                ":planId"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "PUT /admin/gym/:gymId/toggle-verify",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/gym/:gymId/toggle-verify",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "gym",
+                ":gymId",
+                "toggle-verify"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /admin/gym/:gymId/toggle-delete",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/gym/:gymId/toggle-delete",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "gym",
+                ":gymId",
+                "toggle-delete"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /admin/gyms/unverified",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/gyms/unverified",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "gyms",
+                "unverified"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /admin/gyms/admin-all",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/gyms/admin-all",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "gyms",
+                "admin-all"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /admin/gym/:gymId/details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/gym/:gymId/details",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "gym",
+                ":gymId",
+                "details"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /admin/stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/stats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "stats"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /admin/users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /admin/gyms",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/gyms",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "gyms"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /admin/announcements",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/announcements",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "announcements"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /admin/announcements/user",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/announcements/user",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "announcements",
+                "user"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /admin/announcements/:announcementId",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/announcements/:announcementId",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "announcements",
+                ":announcementId"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /admin/plans/search",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/plans/search",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "plans",
+                "search"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /admin/plans/factor",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/plans/factor",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "plans",
+                "factor"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /admin/gym/:gymId/commission",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/gym/:gymId/commission",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "gym",
+                ":gymId",
+                "commission"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /admin/gym/:gymId",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/gym/:gymId",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "gym",
+                ":gymId"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Admin-plans",
+      "item": [
+        {
+          "name": "POST /admin-plans/create",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin-plans/create",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin-plans",
+                "create"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /admin-plans/all",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin-plans/all",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin-plans",
+                "all"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /admin-plans/update/:id",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin-plans/update/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin-plans",
+                "update",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /admin-plans/delete/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin-plans/delete/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin-plans",
+                "delete",
+                ":id"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Partner-subscription",
+      "item": [
+        {
+          "name": "GET /partner-subscription/assigned-plan",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/partner-subscription/assigned-plan",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "partner-subscription",
+                "assigned-plan"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /partner-subscription/create-order",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/partner-subscription/create-order",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "partner-subscription",
+                "create-order"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /partner-subscription/verify-payment",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/partner-subscription/verify-payment",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "partner-subscription",
+                "verify-payment"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /partner-subscription/check-status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/partner-subscription/check-status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "partner-subscription",
+                "check-status"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Payment",
+      "item": [
+        {
+          "name": "GET /payment/gym-balance/:gymId?",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/payment/gym-balance/:gymId?",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "payment",
+                "gym-balance",
+                ":gymId?"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /payment/pay-to-gym",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/payment/pay-to-gym",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "payment",
+                "pay-to-gym"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /payment/history/:gymId?",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/payment/history/:gymId?",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "payment",
+                "history",
+                ":gymId?"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /payment/refund-user",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/payment/refund-user",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "payment",
+                "refund-user"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /payment/request-settlement",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/payment/request-settlement",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "payment",
+                "request-settlement"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /payment/my-settlement-requests",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/payment/my-settlement-requests",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "payment",
+                "my-settlement-requests"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /payment/settlement-requests",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/payment/settlement-requests",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "payment",
+                "settlement-requests"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /payment/settlement/:id/status",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/payment/settlement/:id/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "payment",
+                "settlement",
+                ":id",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "User-data",
+      "item": [
+        {
+          "name": "POST /user-data/:userId",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/user-data/:userId",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user-data",
+                ":userId"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /user-data/:userId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/user-data/:userId",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user-data",
+                ":userId"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /user-data/:userId",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/user-data/:userId",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user-data",
+                ":userId"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /user-data/:userId",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/user-data/:userId",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user-data",
+                ":userId"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Ping",
+      "item": [
+        {
+          "name": "GET /ping",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/ping",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "ping"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Upload",
+      "item": [
+        {
+          "name": "POST /upload",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/upload",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "upload"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
