@@ -44,8 +44,12 @@ export const connectDB = async () => {
     } catch (extErr) {
       console.warn('PostGIS extension check/creation warning:', extErr.message);
     }
-    await sequelize.sync({ alter: true });
-    console.log('All PostgreSQL tables synced successfully.');
+    if (process.env.DB_AUTO_SYNC === 'true') {
+      await sequelize.sync({ alter: true });
+      console.log('All PostgreSQL tables synced successfully via auto-sync.');
+    } else {
+      console.log('PostgreSQL schema managed via versioned database migrations.');
+    }
   } catch (error) {
     console.error('Unable to connect to the PostgreSQL database:', error);
     process.exit(1);

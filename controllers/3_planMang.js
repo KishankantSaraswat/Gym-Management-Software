@@ -1,8 +1,11 @@
 import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
 import * as planService from "../services/planService.js";
+import { assertTenantOwnership } from "../services/authorizationService.js";
 
 // Create Plan (by isVerified:Ture && isDeleted:False)
 export const createPlan = catchAsyncErrors(async (req, res, next) => {
+  const { gymId } = req.params;
+  await assertTenantOwnership(req, gymId);
   const {
     name,
     validity,
@@ -13,7 +16,6 @@ export const createPlan = catchAsyncErrors(async (req, res, next) => {
     isTrainerIncluded,
     duration
   } = req.body;
-  const gymId = req.params.gymId;
 
   const planData = {
     name,
@@ -62,6 +64,7 @@ export const getPlanNameById = catchAsyncErrors(async (req, res, next) => {
 // Get plans also (isActive: true && false)==>keep noted by frontend which for whom
 export const getGymPlansAdminView = catchAsyncErrors(async (req, res, next) => {
   const { gymId } = req.params;
+  await assertTenantOwnership(req, gymId);
 
   const plans = await planService.getGymPlansAdminView(gymId, req.user);
   

@@ -1,6 +1,11 @@
 import nodeMailer from "nodemailer";
 
 export const sendEmail = async ({ to, subject, message }) => {
+    if (process.env.NODE_ENV !== "production") {
+        console.log(`DEV ONLY: Email skipped for ${to} | Subject: ${subject}`);
+        return;
+    }
+
     try {
         const transporter = nodeMailer.createTransport({
             host: process.env.SMTP_HOST,

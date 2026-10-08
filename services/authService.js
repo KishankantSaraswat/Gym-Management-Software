@@ -54,12 +54,8 @@ export const registerUser = async (data) => {
     existing.role = role;
     existing.phone = phone || existing.phone;
     if (address || pincode) {
-      existing.location = {
-        address: address || existing.location?.address,
-        pincode: pincode || existing.location?.pincode,
-        coordinates: existing.location?.coordinates
-      };
-      existing.changed('location', true);
+      if (address) existing.address = address;
+      if (pincode) existing.pincode = pincode;
     }
     existing.accountVerified = false;
     existing.isPwdAuth = true;
@@ -83,12 +79,8 @@ export const registerUser = async (data) => {
       verificationCodeExpire,
     };
 
-    if (address || pincode) {
-      userData.location = {
-        address: address || undefined,
-        pincode: pincode || undefined
-      };
-    }
+    if (address) userData.address = address;
+    if (pincode) userData.pincode = pincode;
 
     user = await userRepository.createUser(userData);
     console.log(`👤 DB - Created NEW user: ${user.email} (ID: ${user.id}, Role: ${user.role})`);
@@ -251,11 +243,12 @@ export const updateUserProfile = async (userId, data) => {
 
   if (address !== undefined || pincode !== undefined) {
     const currentUser = await userRepository.findUserById(userId);
-    updateData.location = {
-      address: address !== undefined ? (address ? address.trim() : undefined) : currentUser?.location?.address,
-      pincode: pincode !== undefined ? (pincode ? pincode.trim() : undefined) : currentUser?.location?.pincode,
-      coordinates: currentUser?.location?.coordinates
-    };
+    if (address !== undefined) {
+      updateData.address = address ? address.trim() : currentUser?.address;
+    }
+    if (pincode !== undefined) {
+      updateData.pincode = pincode ? pincode.trim() : currentUser?.pincode;
+    }
   }
 
   if (Object.keys(updateData).length === 0) {

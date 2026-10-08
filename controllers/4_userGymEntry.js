@@ -1,6 +1,7 @@
 import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
 import ErrorHandler from "../middlewares/errorMiddlewares.js";
 import * as gymEntryService from "../services/gymEntryService.js";
+import { assertTenantOwnership } from "../services/authorizationService.js";
 
 export const qrCheckIn = catchAsyncErrors(async (req, res, next) => {
   try {
@@ -89,6 +90,7 @@ export const getYearlyGymHeatmap = catchAsyncErrors(async (req, res) => {
 export const getGymRegisterByDate = catchAsyncErrors(async (req, res, next) => {
   try {
     const { gymId } = req.params;
+    await assertTenantOwnership(req, gymId);
     const { date } = req.body;
 
     const result = await gymEntryService.fetchGymRegisterByDate(gymId, date);
@@ -108,6 +110,7 @@ export const getGymRegisterByDate = catchAsyncErrors(async (req, res, next) => {
 
 export const getActiveUsers = catchAsyncErrors(async (req, res) => {
   const { gymId } = req.params;
+  await assertTenantOwnership(req, gymId);
   const result = await gymEntryService.fetchActiveUsers(gymId);
 
   res.status(200).json({
@@ -122,6 +125,7 @@ export const getActiveUsers = catchAsyncErrors(async (req, res) => {
 export const cleanExpiredUsers = catchAsyncErrors(async (req, res) => {
   try {
     const { gymId } = req.params;
+    await assertTenantOwnership(req, gymId);
     const result = await gymEntryService.processCleanExpiredUsers(gymId);
 
     if (result.count === 0) {
@@ -150,6 +154,7 @@ export const cleanExpiredUsers = catchAsyncErrors(async (req, res) => {
 export const getActiveCapacity = catchAsyncErrors(async (req, res, next) => {
   try {
     const { gymId } = req.params;
+    await assertTenantOwnership(req, gymId);
     const result = await gymEntryService.fetchActiveCapacity(gymId);
 
     if (!result.isOpen) {

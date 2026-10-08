@@ -1,31 +1,20 @@
 import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
 import ErrorHandler from "../middlewares/errorMiddlewares.js";
-import menuService from "../services/menuService.js";
+import masterAuthzService from "../services/masterAuthzService.js";
 
 export const getAuthorizedMenus = catchAsyncErrors(async (req, res, next) => {
-    // Requires tenantContext middleware to have run
-    const client = req.client;
-    const branch = req.branch;
-    const user = req.user;
+    const gymId = req.headers['x-gym-id'] || req.query.gymId || req.gym?.id;
+    const branchId = req.headers['x-branch-id'] || req.query.branchId || req.branch?.id;
+    const userId = req.user?.id;
 
-    if (!client) {
-        return next(new ErrorHandler("Client (Tenant) context is missing. Cannot load menus.", 400));
+    if (!userId) {
+        return next(new ErrorHandler("User authentication required.", 401));
     }
 
-    // Determine application type from query or headers
-    const appType = req.query.appType || req.headers['x-app-type'] || 'web';
-    const isAppMenu = appType === 'app';
-
-    const menuTree = await menuService.getAuthorizedMenuTree(
-        client.id,
-        user.id,
-        branch ? branch.id : null,
-        user.role,
-        isAppMenu
-    );
+    const authContext = await masterAuthzService.resolveAuthContext(userId, gymId, branchId);
 
     res.status(200).json({
         success: true,
-        menus: menuTree
+        menus: authContext?.menus || []
     });
 });

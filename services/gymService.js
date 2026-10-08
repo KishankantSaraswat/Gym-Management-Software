@@ -10,22 +10,115 @@ export const registerGymService = async (userData, gymData) => {
     throw new ErrorHandler("Only gym owners can register gyms", 403);
   }
 
-  const existingGym = await gymRepo.findGymByOwnerId(userData.id);
-  if (existingGym) {
-    throw new ErrorHandler("Only one gym can be registered per gym owner", 400);
+  const { GymMaster, GymBranchMaster, GymUser, GymBranchUser, GymUserGroup, UserGroupMaster, SubscriptionPlan, GymPermission, UserPermissionMaster } = await import('../models/index.js');
+
+  // Check if owner already has a tenant in gym_master
+  let gymMaster = await GymMaster.findOne({ where: { ownerId: userData.id, status: 'active' } });
+
+  if (gymMaster) {
+    // Check subscription plan limit for multi-branch
+    let maxBranches = 1;
+    if (gymMaster.subscriptionPlanId) {
+      const plan = await SubscriptionPlan.findByPk(gymMaster.subscriptionPlanId);
+      if (plan) maxBranches = plan.maxBranches;
+    }
+
+    const currentBranchCount = await GymBranchMaster.count({ where: { gymId: gymMaster.id } });
+    if (currentBranchCount >= maxBranches) {
+      throw new ErrorHandler(`Your current subscription allows a maximum of ${maxBranches} branch(es). Please upgrade to PRO or ENTERPRISE to add more branches.`, 403);
+    }
   }
 
   const { location, coordinates, ...rest } = gymData;
+  const address = location || gymData.address || '';
+  const longitude = Array.isArray(coordinates) ? coordinates[0] : (gymData.longitude || 0);
+  const latitude = Array.isArray(coordinates) ? coordinates[1] : (gymData.latitude || 0);
 
-  const gym = await gymRepo.createGym({
-    ...rest,
-    address: location,
-    longitude: Array.isArray(coordinates) ? coordinates[0] : 0,
-    latitude: Array.isArray(coordinates) ? coordinates[1] : 0,
-    ownerId: userData.id,
+  // Use transaction to ensure complete integrity across tenant, branch, and RBAC tables
+  return await sequelize.transaction(async (t) => {
+    // 1. Create GymMaster tenant if first gym
+    if (!gymMaster) {
+      const tenantCode = 'GYM_' + Date.now();
+      gymMaster = await GymMaster.create({
+        gymCode: tenantCode,
+        gymName: gymData.name,
+        email: gymData.contactEmail,
+        phone: gymData.phone,
+        ownerId: userData.id,
+        status: 'active'
+      }, { transaction: t });
+
+      // Create GymUser membership as OWNER
+      const gymUser = await GymUser.create({
+        userId: userData.id,
+        gymId: gymMaster.id,
+        userType: 'OWNER',
+        status: 'active'
+      }, { transaction: t });
+
+      // Assign GYM_OWNER role
+      const ownerGroup = await UserGroupMaster.findOne({ where: { groupCode: 'GYM_OWNER' } });
+      if (ownerGroup) {
+        await GymUserGroup.create({
+          gymUserId: gymUser.id,
+          groupId: ownerGroup.id,
+          isPrimary: true,
+          isActive: true
+        }, { transaction: t });
+      }
+
+      // Initialize all permissions in gym_permission
+      const allPerms = await UserPermissionMaster.findAll({ where: { isActive: true } });
+      for (const p of allPerms) {
+        await GymPermission.findOrCreate({
+          where: { gymId: gymMaster.id, permissionId: p.id },
+          defaults: { isEnabled: true },
+          transaction: t
+        });
+      }
+    }
+
+    // 2. Create the branch in gym_branch_master
+    const branchCode = 'BR_' + (gymData.name ? gymData.name.replace(/\s+/g, '_').toUpperCase().substring(0, 8) : 'HQ') + '_' + Math.floor(1000 + Math.random() * 9000);
+    const branch = await GymBranchMaster.create({
+      gymId: gymMaster.id,
+      branchCode,
+      branchName: gymData.name,
+      address,
+      latitude,
+      longitude,
+      pincode: gymData.pincode || null,
+      phone: gymData.phone,
+      contactEmail: gymData.contactEmail,
+      capacity: gymData.capacity || 50,
+      openTime: gymData.openTime || '06:00',
+      closeTime: gymData.closeTime || '22:00',
+      status: 'active'
+    }, { transaction: t });
+
+    // 3. Create legacy gym record for backward compatibility
+    const legacyGym = await gymRepo.createGym({
+      ...rest,
+      id: branch.id,
+      clientId: gymMaster.id,
+      address,
+      longitude,
+      latitude,
+      ownerId: userData.id,
+    }, { transaction: t });
+
+    // 4. Assign branch access to owner in gym_branch_user
+    const gymUser = await GymUser.findOne({ where: { userId: userData.id, gymId: gymMaster.id }, transaction: t });
+    if (gymUser) {
+      await GymBranchUser.findOrCreate({
+        where: { gymId: gymMaster.id, branchId: branch.id, gymUserId: gymUser.id },
+        defaults: { isActive: true },
+        transaction: t
+      });
+    }
+
+    return legacyGym;
   });
-
-  return gym;
 };
 
 export const addUpdateGymMediaService = async (userId, mediaData) => {
@@ -173,12 +266,30 @@ export const getAllGymsService = async (queryData) => {
   return gyms;
 };
 
-export const getGymsByOwnerService = async (user, bodyData) => {
+export const getGymsByOwnerService = async (user, bodyData = {}) => {
   const query = { isDeleted: false };
 
-  if (user.role !== 'Admin') {
-    query.ownerId = user.id;
-  } else if (bodyData.gymIds && user.role === 'Admin') {
+  if (user.role !== 'Admin' && !user.isSuperAdmin) {
+    const { GymMaster, GymUser, GymBranchUser } = await import('../models/index.js');
+    const tenant = await GymMaster.findOne({ where: { ownerId: user.id } });
+    if (tenant) {
+      query[Op.or] = [
+        { clientId: tenant.id },
+        { ownerId: user.id }
+      ];
+    } else {
+      const branchMappings = await GymBranchUser.findAll({
+        include: [{
+          model: GymUser,
+          as: 'gymUser',
+          where: { userId: user.id, status: 'active' }
+        }],
+        where: { isActive: true }
+      });
+      const branchIds = branchMappings.map(b => b.branchId);
+      query.id = { [Op.in]: branchIds.length ? branchIds : [-1] };
+    }
+  } else if (bodyData.gymIds && (user.role === 'Admin' || user.isSuperAdmin)) {
     query.id = { [Op.in]: bodyData.gymIds };
   }
 

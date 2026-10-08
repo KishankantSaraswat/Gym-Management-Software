@@ -18,6 +18,7 @@ import userDataRouter from "./routes/userDataRoutes.js";
 import adminPlanRouter from "./routes/adminPlanRoutes.js";
 import partnerSubRouter from "./routes/gymSubscriptionRoutes.js";
 import menuRouter from "./routes/menuRoutes.js";
+import tenantRouter from "./routes/tenantRoutes.js";
 import { upload } from "./middlewares/multer.js";
 import { isAuthenticated } from "./middlewares/authMiddleware.js";
 
@@ -139,14 +140,19 @@ app.use("/assets", express.static(assetsPath, {
   }
 }));
 
-// app.use("")
-app.use("/auth", authRouter); //staticUri
+// Legacy Route Mounts (100% Backward Compatible)
+app.use("/auth", authRouter);
 app.use("/gymdb", gymShoodRouter);
 app.use("/admin", adminRouter);
 app.use("/admin-plans", adminPlanRouter);
 app.use("/partner-subscription", partnerSubRouter);
 app.use("/payment", paymentRouter);
 app.use("/user-data", userDataRouter);
+
+// Versioned SaaS Multi-Tenant Endpoints (/api/v1)
+app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/tenants", tenantRouter);
+app.use("/api/v1/branches", tenantRouter);
 app.use("/api/v1/menus", menuRouter);
 
 app.get("/ping", (req, res) => {

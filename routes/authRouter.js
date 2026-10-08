@@ -2,6 +2,8 @@ import express from "express";
 import {
   forgotPassword,
   getUser,
+  getMe,
+  switchGym,
   login,
   logout,
   register,
@@ -68,6 +70,8 @@ router.post("/verify-otp", verifyOTP);
 router.post("/login", login);
 router.get("/logout", isAuthenticated, logout);
 router.get("/profile", isAuthenticated, getUser);
+router.get("/me", isAuthenticated, getMe);
+router.post("/switch-gym", isAuthenticated, switchGym);
 router.put("/profile", isAuthenticated, updateUserProfile);
 router.post("/password/forgot", forgotPassword);
 router.post("/password/verify-reset-otp", verifyResetOTP);

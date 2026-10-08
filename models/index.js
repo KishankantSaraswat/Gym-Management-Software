@@ -25,15 +25,91 @@ import {
 } from './schema.js';
 
 import {
+  GymMaster,
+  GymBranchMaster,
+  GymUser,
+  GymBranchUser,
   UserGroupMaster,
-  AppMenuMaster,
+  GymUserGroup,
+  UserPermissionMaster,
+  UserGroupPermission,
+  GymPermission,
+  SubscriptionPlan,
   ClientMenuMaster,
-  PermissionMaster,
-  GroupPermission,
-  UserPermission
-} from './auth_schema.js';
+  ClientMenuPermission,
+  UserSession,
+  AuditLog
+} from './multi_tenant_schema.js';
 
 export function setupAssociations() {
+  // =========================================================================
+  // 1. MULTI-TENANT SAAS & RBAC ASSOCIATIONS
+  // =========================================================================
+
+  // GymMaster (Tenant) <-> User (Owner)
+  User.hasMany(GymMaster, { foreignKey: 'owner_id', as: 'ownedTenants' });
+  GymMaster.belongsTo(User, { foreignKey: 'owner_id', as: 'owner' });
+
+  // GymMaster <-> GymBranchMaster (Branches)
+  GymMaster.hasMany(GymBranchMaster, { foreignKey: 'gym_id', as: 'branches' });
+  GymBranchMaster.belongsTo(GymMaster, { foreignKey: 'gym_id', as: 'tenant' });
+
+  // User <-> GymMaster (via GymUser)
+  User.hasMany(GymUser, { foreignKey: 'user_id', as: 'tenantMemberships' });
+  GymUser.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+  GymMaster.hasMany(GymUser, { foreignKey: 'gym_id', as: 'members' });
+  GymUser.belongsTo(GymMaster, { foreignKey: 'gym_id', as: 'gym' });
+
+  // GymUser <-> GymBranchMaster (via GymBranchUser)
+  GymUser.hasMany(GymBranchUser, { foreignKey: 'gym_user_id', as: 'branchAccessList' });
+  GymBranchUser.belongsTo(GymUser, { foreignKey: 'gym_user_id', as: 'gymUser' });
+  GymBranchMaster.hasMany(GymBranchUser, { foreignKey: 'branch_id', as: 'assignedUsers' });
+  GymBranchUser.belongsTo(GymBranchMaster, { foreignKey: 'branch_id', as: 'branch' });
+
+  // GymUser <-> UserGroupMaster (via GymUserGroup)
+  GymUser.hasMany(GymUserGroup, { foreignKey: 'gym_user_id', as: 'roles' });
+  GymUserGroup.belongsTo(GymUser, { foreignKey: 'gym_user_id', as: 'gymUser' });
+  UserGroupMaster.hasMany(GymUserGroup, { foreignKey: 'group_id', as: 'assignedGymUsers' });
+  GymUserGroup.belongsTo(UserGroupMaster, { foreignKey: 'group_id', as: 'group' });
+
+  // UserGroupMaster <-> UserPermissionMaster (via UserGroupPermission)
+  UserGroupMaster.hasMany(UserGroupPermission, { foreignKey: 'group_id', as: 'permissions' });
+  UserGroupPermission.belongsTo(UserGroupMaster, { foreignKey: 'group_id', as: 'group' });
+  UserPermissionMaster.hasMany(UserGroupPermission, { foreignKey: 'permission_id', as: 'groupMappings' });
+  UserGroupPermission.belongsTo(UserPermissionMaster, { foreignKey: 'permission_id', as: 'permission' });
+
+  // GymMaster <-> UserPermissionMaster (via GymPermission Feature Flags)
+  GymMaster.hasMany(GymPermission, { foreignKey: 'gym_id', as: 'featurePermissions' });
+  GymPermission.belongsTo(GymMaster, { foreignKey: 'gym_id', as: 'gym' });
+  UserPermissionMaster.hasMany(GymPermission, { foreignKey: 'permission_id', as: 'gymFeatureMappings' });
+  GymPermission.belongsTo(UserPermissionMaster, { foreignKey: 'permission_id', as: 'permission' });
+
+  // ClientMenuMaster <-> UserPermissionMaster (via ClientMenuPermission)
+  ClientMenuMaster.hasMany(ClientMenuPermission, { foreignKey: 'menu_id', as: 'menuPermissions' });
+  ClientMenuPermission.belongsTo(ClientMenuMaster, { foreignKey: 'menu_id', as: 'menu' });
+  UserPermissionMaster.hasMany(ClientMenuPermission, { foreignKey: 'permission_id', as: 'menuMappings' });
+  ClientMenuPermission.belongsTo(UserPermissionMaster, { foreignKey: 'permission_id', as: 'permission' });
+
+  // Self-referencing menu tree
+  ClientMenuMaster.hasMany(ClientMenuMaster, { foreignKey: 'parent_id', as: 'children' });
+  ClientMenuMaster.belongsTo(ClientMenuMaster, { foreignKey: 'parent_id', as: 'parent' });
+
+  // GymMaster <-> SubscriptionPlan
+  GymMaster.belongsTo(SubscriptionPlan, { foreignKey: 'subscription_plan_id', as: 'subscriptionPlan' });
+  SubscriptionPlan.hasMany(GymMaster, { foreignKey: 'subscription_plan_id', as: 'gyms' });
+
+  // User <-> UserSession
+  User.hasMany(UserSession, { foreignKey: 'user_id', as: 'sessions' });
+  UserSession.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+
+  // GymMaster <-> AuditLog
+  GymMaster.hasMany(AuditLog, { foreignKey: 'gym_id', as: 'auditLogs' });
+  AuditLog.belongsTo(GymMaster, { foreignKey: 'gym_id', as: 'gym' });
+
+  // =========================================================================
+  // 2. LEGACY / BACKWARD-COMPATIBLE ASSOCIATIONS
+  // =========================================================================
+
   // 1A. Client & User (Owner)
   User.hasMany(Client, { foreignKey: 'ownerId', as: 'ownedClients' });
   Client.belongsTo(User, { foreignKey: 'ownerId', as: 'owner' });
@@ -47,31 +123,6 @@ export function setupAssociations() {
   UserGymMapping.belongsTo(User, { foreignKey: 'userId', as: 'user' });
   Gym.hasMany(UserGymMapping, { foreignKey: 'gymId', as: 'userMappings' });
   UserGymMapping.belongsTo(Gym, { foreignKey: 'gymId', as: 'gym' });
-
-  // 1D. Auth / Permissions
-  Client.hasMany(UserGroupMaster, { foreignKey: 'clientId', as: 'userGroups' });
-  UserGroupMaster.belongsTo(Client, { foreignKey: 'clientId', as: 'client' });
-  
-  AppMenuMaster.hasMany(PermissionMaster, { foreignKey: 'menuId', as: 'permissions' });
-  PermissionMaster.belongsTo(AppMenuMaster, { foreignKey: 'menuId', as: 'menu' });
-
-  AppMenuMaster.hasMany(ClientMenuMaster, { foreignKey: 'menuId', as: 'clientMenus' });
-  ClientMenuMaster.belongsTo(AppMenuMaster, { foreignKey: 'menuId', as: 'menu' });
-  
-  Client.hasMany(ClientMenuMaster, { foreignKey: 'clientId', as: 'menus' });
-  ClientMenuMaster.belongsTo(Client, { foreignKey: 'clientId', as: 'client' });
-  
-  UserGroupMaster.hasMany(GroupPermission, { foreignKey: 'groupId', as: 'permissions' });
-  GroupPermission.belongsTo(UserGroupMaster, { foreignKey: 'groupId', as: 'group' });
-  
-  PermissionMaster.hasMany(GroupPermission, { foreignKey: 'permissionId', as: 'groupMappings' });
-  GroupPermission.belongsTo(PermissionMaster, { foreignKey: 'permissionId', as: 'permission' });
-  
-  User.hasMany(UserPermission, { foreignKey: 'userId', as: 'userPermissions' });
-  UserPermission.belongsTo(User, { foreignKey: 'userId', as: 'user' });
-  
-  PermissionMaster.hasMany(UserPermission, { foreignKey: 'permissionId', as: 'userMappings' });
-  UserPermission.belongsTo(PermissionMaster, { foreignKey: 'permissionId', as: 'permission' });
 
   // 1. User & Gym
   User.hasMany(Gym, { foreignKey: 'ownerId', as: 'gyms' });
@@ -166,19 +217,30 @@ export function setupAssociations() {
   UserData.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 }
 
-// Execute associations setup immediately when index file is loaded
+// Execute associations setup immediately
 setupAssociations();
 
-// Export standard model accessors & index entry point
+// Export models
 export {
+  // Target Multi-Tenant Entities
+  GymMaster,
+  GymBranchMaster,
+  GymUser,
+  GymBranchUser,
+  UserGroupMaster,
+  GymUserGroup,
+  UserPermissionMaster,
+  UserGroupPermission,
+  GymPermission,
+  SubscriptionPlan,
+  ClientMenuMaster,
+  ClientMenuPermission,
+  UserSession,
+  AuditLog,
+
+  // Legacy entities for complete compatibility
   Client,
   UserGymMapping,
-  UserGroupMaster,
-  AppMenuMaster,
-  ClientMenuMaster,
-  PermissionMaster,
-  GroupPermission,
-  UserPermission,
   User,
   Gym,
   VerificationDocument,
