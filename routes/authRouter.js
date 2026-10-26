@@ -14,6 +14,7 @@ import {
   updateUserProfile,
   updateFcmToken,
 } from "../controllers/authController.js";
+import { adminLogin } from "../controllers/adminAuthController.js";
 import { isAuthenticated } from "../middlewares/authMiddleware.js";
 import { body, validationResult } from "express-validator";
 import ErrorHandler from "../middlewares/errorMiddlewares.js";
@@ -68,6 +69,7 @@ const validateRegistration = [
 router.post("/register", validateRegistration, register);
 router.post("/verify-otp", verifyOTP);
 router.post("/login", login);
+router.post("/admin/login", adminLogin);
 router.get("/logout", isAuthenticated, logout);
 router.get("/profile", isAuthenticated, getUser);
 router.get("/me", isAuthenticated, getMe);

@@ -30,6 +30,15 @@ class AuthorizationService {
     const user = req.user;
     if (user.isSuperAdmin || user.role === 'Admin') return;
 
+    // Client Company context (Company = Gym)
+    if (req.isClientCompanyUser || user.companyId) {
+      const userCompanyId = String(user.companyId || req.authContext?.company_id);
+      if (String(targetGymId) === userCompanyId) {
+        return;
+      }
+      throw new ErrorHandler('Access Denied: You do not have permission to access data belonging to this company/gym.', 403);
+    }
+
     const authContext = await masterAuthzService.resolveAuthContext(user.id, targetGymId);
     if (!authContext || !authContext.gym || String(authContext.gym.id) !== String(targetGymId)) {
       throw new ErrorHandler('Access Denied: You do not have permission to access data belonging to this gym.', 403);

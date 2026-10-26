@@ -1,4 +1,16 @@
-import { User, Gym, GymMaster, GymBranchMaster, UserPlan, AdminPlan } from "../models/index.js";
+import {
+  User,
+  Gym,
+  GymMaster,
+  GymBranchMaster,
+  UserPlan,
+  AdminPlan,
+  AdminUser,
+  UserGroup,
+  UserGroupRight,
+  UserMasterRight,
+  UserBranchRight
+} from "../models/index.js";
 import { catchAsyncErrors } from "./catchAsyncErrors.js";
 import ErrorHandler from "./errorMiddlewares.js";
 import jwt from "jsonwebtoken";
@@ -43,7 +55,80 @@ export const isAuthenticated = catchAsyncErrors(async (req, res, next) => {
             }
         }
 
-        // 4. Retrieve User
+        // 4. Retrieve User (ClientCompanyUser, AdminUser or regular User)
+        if (decoded.userType === 'ClientCompanyUser') {
+            const { ClientCompanyUser, ClientCompanyMaster, ClientCompanyUserGroup, ClientCompanyUserGroupPermission, ClientCompanyUserPermission } = await import('../models/index.js');
+            const clientUser = await ClientCompanyUser.findByPk(userId);
+
+            if (!clientUser || !clientUser.status) {
+                return next(new ErrorHandler("Client user account not found or deactivated.", 404));
+            }
+
+            // Assign role: if company owner, grant GymOwner role for backward compatibility
+            clientUser.role = clientUser.isCompanyOwner ? 'GymOwner' : 'ClientStaff';
+            req.user = clientUser;
+            req.isClientCompanyUser = true;
+            req.sessionId = decoded.session_id || null;
+
+            // Load permissions
+            const groupPerms = clientUser.groupId
+                ? await ClientCompanyUserGroupPermission.findAll({ where: { groupId: clientUser.groupId, companyId: clientUser.companyId }, raw: true })
+                : [];
+            const userPerms = await ClientCompanyUserPermission.findAll({ where: { userId: clientUser.id, companyId: clientUser.companyId }, raw: true });
+
+            req.authContext = {
+                user_id: clientUser.id,
+                email: clientUser.email,
+                name: clientUser.name,
+                company_id: clientUser.companyId,
+                role: clientUser.role,
+                is_company_owner: clientUser.isCompanyOwner,
+                permissions: groupPerms.concat(userPerms)
+            };
+
+            return next();
+        }
+
+        if (decoded.isAdminUser || decoded.userType === 'AdminUser') {
+            const admin = await AdminUser.findByPk(userId, {
+                include: [
+                    {
+                        model: UserGroup,
+                        as: 'group',
+                        required: false
+                    }
+                ]
+            });
+
+            if (!admin || admin.isDeleted || !admin.isActive) {
+                return next(new ErrorHandler("Admin account not found or has been deactivated.", 404));
+            }
+
+            req.user = admin;
+            req.isAdminUser = true;
+            req.sessionId = decoded.session_id || null;
+
+            // Load rights map (group rights + user master rights) & branch rights
+            const { resolveUserRights, resolveUserBranches } = await import('../controllers/adminAuthController.js');
+            const rightsMap = await resolveUserRights(admin.id, admin.groupId);
+            const accessibleBranches = await resolveUserBranches(admin.id);
+
+            req.rights = rightsMap;
+            req.branches = accessibleBranches;
+
+            req.authContext = {
+                user_id: admin.id,
+                email: admin.email,
+                name: admin.name,
+                group_id: admin.groupId || null,
+                group_name: admin.group?.group_name || null,
+                rights: rightsMap,
+                branches: accessibleBranches,
+                permissions: ['*'] // for backward compatibility with generic guards
+            };
+            return next();
+        }
+
         const user = await User.findByPk(userId);
         if (!user || user.isDeleted) {
             return next(new ErrorHandler("User account not found or has been deactivated.", 404));
@@ -151,35 +236,33 @@ export const tenantContext = catchAsyncErrors(async (req, res, next) => {
     next();
 });
 
-// Generic role-based authorization middleware (backward compatibility)
+// Role-free authorization middleware (all permissions and rights-based)
 export const requireRole = (...allowedRoles) => {
     return (req, res, next) => {
-        const currentRole = req.authContext?.role || req.user.role;
-        // Map GYM_OWNER -> GymOwner, MEMBER -> User, etc. for backward compatibility
-        const isMatch = allowedRoles.some(r => 
-            r.toLowerCase() === currentRole.toLowerCase() ||
-            (r === 'GymOwner' && (currentRole === 'GYM_OWNER' || currentRole === 'OWNER')) ||
-            (r === 'User' && (currentRole === 'MEMBER' || currentRole === 'User')) ||
-            (r === 'Admin' && (currentRole === 'SUPER_ADMIN' || currentRole === 'Admin' || req.user.isSuperAdmin))
-        );
-
-        if (!isMatch) {
-            return next(
-                new ErrorHandler(
-                    `Role ${currentRole} is not authorized to access this resource.`,
-                    403
-                )
-            );
-        }
+        // No role-based blocking: all authenticated users proceed to resource/permission checks
         next();
     };
 };
 
-export const isAdmin = requireRole('Admin');
-export const isGymOwner = requireRole('GymOwner');
-export const isMember = requireRole('User');
-export const isGymOwnerOrAdmin = requireRole('GymOwner', 'Admin');
-export const isVerifiedUser = requireRole('User', 'GymOwner', 'Admin');
+export const isAdmin = (req, res, next) => {
+    // Only AdminUser (or users with Admin role / isSuperAdmin) can access Admin portal & APIs
+    if (req.isAdminUser || req.user?.isSuperAdmin || req.user?.role === 'Admin') {
+        return next();
+    }
+    return next(new ErrorHandler("Access denied: Admin privileges required. Client company users cannot access the admin portal.", 403));
+};
+
+export const isClientUser = (req, res, next) => {
+    if (req.isClientCompanyUser || req.user?.companyId) {
+        return next();
+    }
+    return next(new ErrorHandler("Access denied: Client company user privileges required.", 403));
+};
+
+export const isGymOwner = (req, res, next) => next();
+export const isMember = (req, res, next) => next();
+export const isGymOwnerOrAdmin = (req, res, next) => next();
+export const isVerifiedUser = (req, res, next) => next();
 
 // Middleware to check if user owns the gym resource (IDOR protection)
 export const isGymResourceOwner = catchAsyncErrors(async (req, res, next) => {
@@ -193,12 +276,19 @@ export const isGymResourceOwner = catchAsyncErrors(async (req, res, next) => {
         return next();
     }
 
+    if (req.isClientCompanyUser || req.user?.companyId) {
+        const userCompanyId = String(req.user.companyId || req.authContext?.company_id);
+        if (String(gymId) === userCompanyId) {
+            return next();
+        }
+    }
+
     const gym = await Gym.findByPk(gymId);
     if (!gym) {
         return next(new ErrorHandler("Gym not found", 404));
     }
 
-    if (gym.ownerId !== req.user.id) {
+    if (gym.ownerId !== req.user.id && String(gym.clientId) !== String(req.user.companyId)) {
         return next(new ErrorHandler("You are not authorized for this gym", 403));
     }
 
@@ -231,6 +321,39 @@ export const isSubscriptionActive = catchAsyncErrors(async (req, res, next) => {
         return next();
     }
 
+    // 1. If Client Company User (Company is our Gym)
+    if (req.isClientCompanyUser || req.user?.companyId) {
+        const { ClientCompanyMaster } = await import('../models/index.js');
+        const companyId = req.user.companyId || req.authContext?.company_id;
+        const company = await ClientCompanyMaster.findByPk(companyId);
+
+        if (!company) {
+            return next(new ErrorHandler("Company not found for this account", 404));
+        }
+
+        if (company.status === 0 || company.status === false) {
+            return res.status(403).json({
+                success: false,
+                message: "Your company account is inactive. Please contact administrator.",
+                gymId: company.id,
+                name: company.name
+            });
+        }
+
+        req.gym = {
+            id: company.id,
+            name: company.name,
+            ownerId: req.user.id,
+            companyId: company.id,
+            subscriptionStatus: 'active',
+            latitude: company.latitude || null,
+            longitude: company.longitude || null,
+            address: company.address || null
+        };
+        return next();
+    }
+
+    // 2. Fallback to Legacy Gym table
     const gym = await Gym.findOne({ 
         where: { ownerId: req.user.id }, 
         include: [{ model: AdminPlan, as: 'assignedPlan' }] 

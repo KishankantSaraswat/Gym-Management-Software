@@ -144,9 +144,46 @@ export const verifyOTP = async (email, otp, registrationSessionId) => {
 export const loginUser = async (email, password, role) => {
   const normalizedEmail = email.trim().toLowerCase();
   const isSuperAdmin = normalizedEmail === getSuperAdminEmail();
-  const user = isSuperAdmin
+  let user = isSuperAdmin
     ? await userRepository.findUserByEmail(normalizedEmail)
     : await userRepository.findUserByEmailAndRole(normalizedEmail, role);
+
+  // Fallback: If not found and role is GymOwner, check if email is registered under client_company_master
+  if (!user && (role === "GymOwner" || !role)) {
+    try {
+      const { ClientCompanyMaster, Client, GymMaster } = await import("../models/index.js");
+      const company = await ClientCompanyMaster.findOne({
+        where: sequelize.where(
+          sequelize.fn('LOWER', sequelize.col('email')),
+          normalizedEmail
+        )
+      });
+
+      if (company) {
+        if (company.client_id) {
+          const client = await Client.findByPk(company.client_id);
+          if (client && client.ownerId) {
+            user = await userRepository.findUserById(client.ownerId);
+          }
+          if (!user) {
+            const gymMaster = await GymMaster.findByPk(company.client_id);
+            if (gymMaster && gymMaster.ownerId) {
+              user = await userRepository.findUserById(gymMaster.ownerId);
+            }
+          }
+          if (!user) {
+            const direct = await userRepository.findUserById(company.client_id);
+            if (direct) user = direct;
+          }
+        }
+        if (!user) {
+          user = await userRepository.findUserByEmail(normalizedEmail);
+        }
+      }
+    } catch (e) {
+      console.warn("Company email lookup fallback notice:", e.message);
+    }
+  }
 
   if (!user || !user.accountVerified) {
     console.log("❌ Login Failed: User not found or not verified/role mismatch");

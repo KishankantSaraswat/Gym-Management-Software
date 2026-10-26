@@ -267,6 +267,36 @@ export const getAllGymsService = async (queryData) => {
 };
 
 export const getGymsByOwnerService = async (user, bodyData = {}) => {
+  const { ClientCompanyMaster, ClientCompanyUser } = await import('../models/index.js');
+
+  // If user is a ClientCompanyUser or linked to a company, return the client company as the gym partner entity
+  let company = null;
+  if (user.companyId) {
+    company = await ClientCompanyMaster.findByPk(user.companyId);
+  } else if (user.email) {
+    company = await ClientCompanyMaster.findOne({ where: { email: user.email } });
+  }
+
+  if (company) {
+    const companyGymObject = {
+      id: company.id,
+      name: company.name,
+      contactEmail: company.email,
+      phone: company.mobile_no,
+      address: company.address,
+      website: company.website,
+      status: company.status ? 'active' : 'inactive',
+      isVerified: true,
+      onboardingStatus: 'completed',
+      subscriptionStatus: 'active',
+      isDeleted: false,
+      ownerId: user.id,
+      companyId: company.id,
+      company
+    };
+    return [companyGymObject];
+  }
+
   const query = { isDeleted: false };
 
   if (user.role !== 'Admin' && !user.isSuperAdmin) {

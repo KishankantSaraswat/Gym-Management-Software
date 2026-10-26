@@ -225,7 +225,7 @@ export const fetchGymRegisterByDate = async (gymId, dateParam) => {
 
   const stats = await findGymDailyStatsDescending(gymId, targetDate);
   if (!stats) {
-    throw new Error(`No gym register found for date ${targetDate}`);
+    return { register: [], date: targetDate };
   }
   return { register: stats.register || [], date: targetDate };
 };

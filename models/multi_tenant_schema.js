@@ -212,6 +212,7 @@ export const UserSession = sequelize.define('UserSession', {
   ipAddress: { type: DataTypes.STRING(50), field: 'ip_address' },
   userAgent: { type: DataTypes.TEXT, field: 'user_agent' },
   authzVersion: { type: DataTypes.INTEGER, defaultValue: 1, field: 'authz_version' },
+  userType: { type: DataTypes.STRING(50), defaultValue: 'User', field: 'user_type' },
   expiresAt: { type: DataTypes.DATE, allowNull: false, field: 'expires_at' },
   revokedAt: { type: DataTypes.DATE, allowNull: true, field: 'revoked_at' }
 }, {

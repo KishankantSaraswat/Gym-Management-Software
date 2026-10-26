@@ -2,10 +2,34 @@ import { Op } from 'sequelize';
 import { UserPlan, GymDailyStats, GymPlanRevenue, AnalyticsCache, Gym, User, WalletTransaction, Plan } from "../models/index.js";
 
 export const getGymById = async (gymId, ownerId = null) => {
+  let gym = null;
   if (ownerId) {
-    return await Gym.findOne({ where: { id: gymId, ownerId } });
+    gym = await Gym.findOne({ where: { id: gymId, ownerId } });
+  } else {
+    gym = await Gym.findByPk(gymId);
   }
-  return await Gym.findByPk(gymId);
+
+  if (gym) return gym;
+
+  // Fallback to ClientCompanyMaster (Company is our Gym)
+  const { ClientCompanyMaster } = await import("../models/index.js");
+  const company = await ClientCompanyMaster.findByPk(gymId);
+  if (company) {
+    return {
+      id: company.id,
+      name: company.name,
+      contactEmail: company.email,
+      phone: company.mobile_no,
+      address: company.address,
+      latitude: company.latitude || 28.6139,
+      longitude: company.longitude || 77.2090,
+      status: company.status ? 'open' : 'closed',
+      companyId: company.id,
+      company
+    };
+  }
+
+  return null;
 };
 
 export const getActiveMembersCount = async (gymId) => {

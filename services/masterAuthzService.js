@@ -19,7 +19,7 @@ class MasterAuthzService {
         u."isSuperAdmin" as "is_super_admin",
         u."accountVerified" as "account_verified",
         u."isDeleted" as "is_deleted",
-        COALESCE(u."authz_version", 1) as "authz_version"
+        1 as "authz_version"
       FROM "users" u
       WHERE u."id" = :userId
     `, { replacements: { userId } });

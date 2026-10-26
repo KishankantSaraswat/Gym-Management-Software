@@ -3,6 +3,7 @@ import { sequelize } from '../database/db.js';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
+import { AdminUser } from './admin_user_schema.js';
 
 // 1. Unified User
 const User = sequelize.define('User', {
@@ -202,7 +203,7 @@ const Plan = sequelize.define('Plan', {
   validity: { type: DataTypes.INTEGER, allowNull: false },
   price: { type: DataTypes.FLOAT, allowNull: false },
   discountPercent: { type: DataTypes.FLOAT, defaultValue: 0 },
-  duration: { type: DataTypes.INTEGER, allowNull: false },
+  duration: { type: DataTypes.FLOAT, allowNull: false },
   features: { type: DataTypes.TEXT },
   planType: { type: DataTypes.STRING },
   isTrainerIncluded: { type: DataTypes.BOOLEAN, defaultValue: false },
@@ -503,5 +504,6 @@ export {
   Announcement,
   AdminPlan,
   GymSubscription,
-  UserData
+  UserData,
+  AdminUser
 };

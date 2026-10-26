@@ -118,7 +118,8 @@ router.get("/gyms", getAllGyms);
 // IMPORTANT: Specific routes must come BEFORE parameterized routes
 // Place /gym/pending-requests BEFORE /gym/:id to avoid route collision
 router.get("/gym/pending-requests", isAuthenticated, isGymOwner, isSubscriptionActive, getPendingCashRequests);
-router.get("/gym/owner/:ownerId", isAuthenticated, isGymOwner, isSubscriptionActive, getGymsByOwner);
+router.get("/gym/owner/me", isAuthenticated, getGymsByOwner);
+router.get("/gym/owner/:ownerId", isAuthenticated, isGymOwner, getGymsByOwner);
 
 // Generic parameterized routes come AFTER specific routes
 router.get("/gym/:id", getGymDetails);

@@ -47,13 +47,33 @@ export const verifyOTP = catchAsyncErrors(async (req, res, next) => {
 });
 
 export const login = catchAsyncErrors(async (req, res, next) => {
-  const { email, password, role, gymId, branchId } = req.body;
+  const { email, password, role, gymId, branchId, consent } = req.body;
   
   if (!email || !password || !role) {
     return next(new ErrorHandler("Please enter all fields.", 400));
   }
 
   const user = await authService.loginUser(email, password, role);
+
+  // Active Session Detection
+  const hasActive = await sessionService.hasActiveSession(user.id, 'User');
+  const userConsent = consent === true || consent === 'true';
+
+  if (hasActive && !userConsent) {
+    return res.status(409).json({
+      success: false,
+      code: "SESSION_ACTIVE",
+      requireConsent: true,
+      require_consent: true,
+      isAlreadyLoggedIn: true,
+      message: "You are already logged in on another browser or device. Do you want to log in here?"
+    });
+  }
+
+  // If active session exists and consent is granted, invalidate previous sessions
+  if (hasActive) {
+    await sessionService.revokeAllUserSessions(user.id, 'User');
+  }
 
   await sendToken(user, 200, "User login successfully.", res, {
     gymId,
@@ -64,10 +84,30 @@ export const login = catchAsyncErrors(async (req, res, next) => {
 });
 
 export const googleLogin = catchAsyncErrors(async (req, res, next) => {
-  const { token, role, gymId, branchId } = req.body;
+  const { token, role, gymId, branchId, consent } = req.body;
   if (!token || !role) return next(new ErrorHandler("either token or role is missing.", 400));
   
   const user = await authService.googleLogin(token, role);
+
+  // Active Session Detection
+  const hasActive = await sessionService.hasActiveSession(user.id, 'User');
+  const userConsent = consent === true || consent === 'true';
+
+  if (hasActive && !userConsent) {
+    return res.status(409).json({
+      success: false,
+      code: "SESSION_ACTIVE",
+      requireConsent: true,
+      require_consent: true,
+      isAlreadyLoggedIn: true,
+      message: "You are already logged in on another browser or device. Do you want to log in here?"
+    });
+  }
+
+  if (hasActive) {
+    await sessionService.revokeAllUserSessions(user.id, 'User');
+  }
+
   await sendToken(user, 200, "Google Login successful", res, {
     gymId,
     branchId,

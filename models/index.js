@@ -21,7 +21,8 @@ import {
   Announcement,
   AdminPlan,
   GymSubscription,
-  UserData
+  UserData,
+  AdminUser
 } from './schema.js';
 
 import {
@@ -40,6 +41,30 @@ import {
   UserSession,
   AuditLog
 } from './multi_tenant_schema.js';
+
+import {
+  UserGroup,
+  UserGroupRight,
+  UserMasterRight,
+  UserBranchRight,
+  CompanyMasterRight
+} from './rights_schema.js';
+
+import { ClientCompanyMaster } from './client_company_schema.js';
+import {
+  AdminCompany,
+  AdminUserGroup,
+  AdminUserHierarchical,
+  AdminUserGroupPermission,
+  AdminUserPermission,
+} from './admin_hierarchy_schema.js';
+import {
+  ClientCompanyUserGroup,
+  ClientCompanyUser,
+  ClientCompanyUserGroupPermission,
+  ClientCompanyUserPermission,
+} from './client_hierarchy_schema.js';
+import { GlobalMenuMaster } from './global_menu_schema.js';
 
 export function setupAssociations() {
   // =========================================================================
@@ -105,6 +130,36 @@ export function setupAssociations() {
   // GymMaster <-> AuditLog
   GymMaster.hasMany(AuditLog, { foreignKey: 'gym_id', as: 'auditLogs' });
   AuditLog.belongsTo(GymMaster, { foreignKey: 'gym_id', as: 'gym' });
+
+  // AdminUser Master Relationships (Manager, Audit Users)
+  AdminUser.belongsTo(User, { foreignKey: 'manager_id', as: 'manager' });
+  User.hasMany(AdminUser, { foreignKey: 'manager_id', as: 'managedAdmins' });
+  AdminUser.belongsTo(User, { foreignKey: 'cr_usr', as: 'creator' });
+  AdminUser.belongsTo(User, { foreignKey: 'md_usr', as: 'modifier' });
+
+  // UserGroup (users_group_master) & AdminUser Relationships
+  AdminUser.belongsTo(UserGroup, { foreignKey: 'group_id', as: 'group' });
+  UserGroup.hasMany(AdminUser, { foreignKey: 'group_id', as: 'adminUsers' });
+
+  // UserGroupRight (users_group_rights) <-> UserGroup & ClientMenuMaster
+  UserGroup.hasMany(UserGroupRight, { foreignKey: 'group_id', as: 'groupRights' });
+  UserGroupRight.belongsTo(UserGroup, { foreignKey: 'group_id', as: 'group' });
+  UserGroupRight.belongsTo(ClientMenuMaster, { foreignKey: 'page_id', as: 'menu' });
+  ClientMenuMaster.hasMany(UserGroupRight, { foreignKey: 'page_id', as: 'groupRights' });
+
+  // UserMasterRight (users_master_rights) <-> User, AdminUser & ClientMenuMaster
+  User.hasMany(UserMasterRight, { foreignKey: 'user_id', as: 'masterRights' });
+  UserMasterRight.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+  AdminUser.hasMany(UserMasterRight, { foreignKey: 'user_id', as: 'adminRights' });
+  UserMasterRight.belongsTo(AdminUser, { foreignKey: 'user_id', as: 'admin' });
+  UserMasterRight.belongsTo(ClientMenuMaster, { foreignKey: 'page_id', as: 'menu' });
+  ClientMenuMaster.hasMany(UserMasterRight, { foreignKey: 'page_id', as: 'userMasterRights' });
+
+  // UserBranchRight (user_branch_rights) <-> User & AdminUser
+  User.hasMany(UserBranchRight, { foreignKey: 'user_id', as: 'branchRights' });
+  UserBranchRight.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+  AdminUser.hasMany(UserBranchRight, { foreignKey: 'user_id', as: 'adminBranchRights' });
+  UserBranchRight.belongsTo(AdminUser, { foreignKey: 'user_id', as: 'admin' });
 
   // =========================================================================
   // 2. LEGACY / BACKWARD-COMPATIBLE ASSOCIATIONS
@@ -261,5 +316,24 @@ export {
   Announcement,
   AdminPlan,
   GymSubscription,
-  UserData
+  UserData,
+  AdminUser,
+  UserGroup,
+  UserGroupRight,
+  UserMasterRight,
+  UserBranchRight,
+  CompanyMasterRight,
+  ClientCompanyMaster,
+  // Admin Hierarchy Models
+  AdminCompany,
+  AdminUserGroup,
+  AdminUserHierarchical,
+  AdminUserGroupPermission,
+  AdminUserPermission,
+  // Client Company Hierarchy Models
+  ClientCompanyUserGroup,
+  ClientCompanyUser,
+  ClientCompanyUserGroupPermission,
+  ClientCompanyUserPermission,
+  GlobalMenuMaster,
 };

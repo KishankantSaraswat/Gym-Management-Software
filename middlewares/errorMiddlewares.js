@@ -9,6 +9,11 @@ export const errorMiddleware=(err,req,res,next)=>{
     err.message=err.message||"Internal Server Error";
     err.statusCode=err.statusCode|| 500;
 
+    // Attach to request object so apiLogger captures the full exception details
+    if (req) {
+        req.__loggedError = err;
+    }
+
     if (err.name === 'SequelizeValidationError') {
         const message = err.errors ? err.errors.map((item) => item.message).join(", ") : "Validation Error";
         err = new ErrorHandler(message, 400);

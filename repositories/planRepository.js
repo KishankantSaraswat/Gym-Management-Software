@@ -1,13 +1,37 @@
 import { Plan, Gym } from "../models/index.js";
 
 export const findVerifiedGymByOwner = async (gymId, ownerId) => {
-  return await Gym.findOne({
+  const gym = await Gym.findOne({
     where: {
       id: gymId,
       ownerId,
       isVerified: true
     }
   });
+
+  if (gym) return gym;
+
+  // Fallback: check ClientCompanyMaster (Company is our Gym)
+  const { ClientCompanyMaster, ClientCompanyUser } = await import("../models/index.js");
+  const company = await ClientCompanyMaster.findByPk(gymId);
+  if (company && (company.status === 1 || company.status === true)) {
+    // Check if user belongs to this company
+    const clientUser = await ClientCompanyUser.findOne({
+      where: { id: ownerId, companyId: company.id }
+    });
+    if (clientUser) {
+      return {
+        id: company.id,
+        name: company.name,
+        ownerId: clientUser.id,
+        isVerified: true,
+        status: 'open',
+        company
+      };
+    }
+  }
+
+  return null;
 };
 
 export const findGymByOwner = async (gymId, ownerId) => {
